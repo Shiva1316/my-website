@@ -1,0 +1,1219 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>PulseNews — Modern Responsive News</title>
+    <meta name="description" content="PulseNews — demo responsive news website (vanilla HTML/CSS/JS)" />
+    <style>
+         :root {
+            --bg: #081221;
+            --panel: #071724;
+            --muted: #9aa4b2;
+            --accent: #06b6d4;
+            --accent-2: #0b75ff;
+            --glass: rgba(255, 255, 255, 0.03);
+            --radius: 12px;
+            --gap: 16px;
+            --container-padding: 16px;
+            --max-width: 1200px;
+            --font-sans: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+        }
+        
+        * {
+            box-sizing: border-box
+        }
+        
+        html,
+        body {
+            height: 100%
+        }
+        
+        body {
+            margin: 0;
+            font-family: var(--font-sans);
+            background: linear-gradient(180deg, #031025 0%, #08121b 100%);
+            color: #e6eef6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .site {
+            width: 100%;
+            max-width: var(--max-width);
+            margin: 0 auto;
+        }
+        /* Header */
+        
+        header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+        
+        .brand {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            display: grid;
+            place-items: center;
+            font-weight: 800;
+            font-size: 18px;
+            box-shadow: 0 8px 28px rgba(6, 182, 212, 0.12);
+            cursor: pointer;
+        }
+        
+        .site-title {
+            line-height: 1
+        }
+        
+        nav.topnav {
+            display: flex;
+            gap: 12px;
+            align-items: center
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 10px;
+            align-items: center
+        }
+        
+        .nav-links a {
+            color: var(--muted);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 14px;
+            padding: 8px;
+            border-radius: 8px;
+        }
+        
+        .nav-links a[aria-current="true"] {
+            color: inherit;
+            background: var(--glass)
+        }
+        
+        .search {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--glass);
+            border-radius: 999px;
+            padding: 6px 10px;
+            min-width: 220px;
+        }
+        
+        .search input {
+            background: transparent;
+            border: 0;
+            outline: none;
+            color: inherit;
+            font-size: 14px;
+            width: 180px
+        }
+        
+        .btn {
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+            border: 0;
+            color: #022027;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+        /* Hamburger */
+        
+        .hamburger {
+            display: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            background: var(--glass);
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 0;
+            color: var(--muted);
+        }
+        /* Layout */
+        
+        main {
+            display: block;
+            gap: var(--gap)
+        }
+        
+        .content {
+            display: grid;
+            gap: 16px;
+            grid-template-columns: 1fr;
+        }
+        
+        @media(min-width:1000px) {
+            .content {
+                grid-template-columns: 2fr 360px;
+            }
+        }
+        /* Featured */
+        
+        .featured {
+            border-radius: var(--radius);
+            overflow: hidden;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent);
+            box-shadow: 0 8px 30px rgba(2, 6, 23, 0.6);
+        }
+        
+        .slider {
+            position: relative;
+            height: 320px;
+            overflow: hidden
+        }
+        
+        .slide {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center center;
+            display: flex;
+            align-items: flex-end;
+            padding: 18px;
+            transition: opacity .45s ease;
+            opacity: 0;
+            pointer-events: none
+        }
+        
+        .slide.active {
+            opacity: 1;
+            pointer-events: auto
+        }
+        
+        .slide .card {
+            background: linear-gradient(180deg, transparent, rgba(2, 6, 23, 0.8));
+            padding: 16px;
+            border-radius: 10px;
+            width: 100%
+        }
+        
+        .slide h2 {
+            margin: 0;
+            font-size: 20px
+        }
+        
+        .slide p {
+            margin: 6px 0 0;
+            color: var(--muted);
+            font-size: 13px
+        }
+        
+        .slider-controls {
+            position: absolute;
+            left: 12px;
+            bottom: 12px;
+            display: flex;
+            gap: 8px
+        }
+        
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.12);
+            cursor: pointer
+        }
+        
+        .dot.active {
+            background: var(--accent)
+        }
+        /* category chips */
+        
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 12px 10px
+        }
+        
+        .chip {
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--muted);
+            cursor: pointer
+        }
+        
+        .chip.active {
+            background: var(--accent);
+            color: #022727;
+            border-color: transparent
+        }
+        /* grid */
+        
+        .grid {
+            display: grid;
+            gap: 12px;
+            grid-template-columns: 1fr
+        }
+        
+        @media(min-width:640px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr)
+            }
+        }
+        
+        @media(min-width:1100px) {
+            .grid {
+                grid-template-columns: repeat(3, 1fr)
+            }
+        }
+        
+        .card {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 20px rgba(2, 6, 23, 0.6);
+            transition: transform .22s ease, box-shadow .22s ease;
+            will-change: transform;
+        }
+        
+        .card img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            display: block;
+            transition: transform .45s ease;
+            transform-origin: center center;
+        }
+        /* Hover / focus zoom effect for cards and images */
+        
+        .card:hover,
+        .card:focus-within {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 0 16px 40px rgba(2, 6, 23, 0.7);
+        }
+        
+        .card:hover img,
+        .card:focus-within img {
+            transform: scale(1.06);
+        }
+        
+        .card-body {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px
+        }
+        
+        .meta {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--muted)
+        }
+        
+        .title {
+            font-size: 16px;
+            margin: 0
+        }
+        
+        .summary {
+            font-size: 14px;
+            color: var(--muted);
+            line-height: 1.35
+        }
+        
+        .readmore {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 8px
+        }
+        /* sidebar */
+        
+        aside {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.01), transparent);
+            padding: 12px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(2, 6, 23, 0.5)
+        }
+        
+        .trending .trend-item {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02)
+        }
+        
+        .trend-item img {
+            width: 70px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 8px
+        }
+        /* pages */
+        
+        section.page {
+            display: none
+        }
+        
+        section.page.active {
+            display: block
+        }
+        /* modal */
+        
+        .modal {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 60;
+            padding: 20px
+        }
+        
+        .modal.show {
+            display: flex
+        }
+        
+        .modal-card {
+            background: linear-gradient(180deg, #071425, #02121a);
+            max-width: 900px;
+            width: 100%;
+            border-radius: 12px;
+            overflow: auto;
+            max-height: 90vh
+        }
+        
+        .modal-body {
+            padding: 18px
+        }
+        
+        .close {
+            background: transparent;
+            border: 0;
+            color: var(--muted);
+            font-weight: 700;
+            cursor: pointer;
+            padding: 8px 12px
+        }
+        /* contact form */
+        
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 12px
+        }
+        
+        @media(min-width:700px) {
+            .form-row.two {
+                flex-direction: row
+            }
+            .form-row.two input {
+                flex: 1
+            }
+        }
+        /* footer */
+        
+        footer {
+            margin-top: 18px;
+            color: var(--muted);
+            font-size: 13px;
+            text-align: center
+        }
+        /* utilities */
+        
+        .muted {
+            color: var(--muted)
+        }
+        
+        .small {
+            font-size: 13px
+        }
+        
+        .readline {
+            font-size: 13px;
+            color: var(--muted);
+            margin-top: 6px;
+        }
+        /* responsive nav */
+        
+        @media(max-width:900px) {
+            .nav-links {
+                display: none
+            }
+            .hamburger {
+                display: flex
+            }
+            .search input {
+                width: 100px
+            }
+        }
+        /* mobile modal adjustments */
+        
+        @media(max-width:520px) {
+            .slider {
+                height: 220px
+            }
+            .slide .card h2 {
+                font-size: 16px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="site" role="application">
+        <header>
+            <div class="brand" aria-hidden="false">
+                <div class="logo" id="homeLogo" role="button" tabindex="0" aria-label="Go to home">PN</div>
+                <div class="site-title" style="line-height:1">
+                    <div style="font-weight:800;font-size:18px">PulseNews</div>
+                    <div class="muted small">Fresh. Fast. Fair.</div>
+                </div>
+            </div>
+
+            <nav class="topnav" aria-label="Main navigation">
+                <button class="hamburger" id="menuToggle" aria-expanded="false" aria-controls="mobileMenu" aria-label="Open menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path stroke="currentColor" stroke-width="1.6" stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"></path></svg>
+        </button>
+
+                <div class="nav-links" role="menubar" aria-hidden="false" id="desktopLinks">
+                    <a href="#" data-page="home" role="menuitem" aria-current="true">Home</a>
+                    <a href="#" data-page="categories" role="menuitem">Categories</a>
+                    <a href="#" data-page="trending" role="menuitem">Trending</a>
+                    <a href="#" data-page="about" role="menuitem">About</a>
+                    <a href="#" data-page="contact" role="menuitem">Contact</a>
+                </div>
+
+                <div style="display:flex;align-items:center;gap:10px">
+                    <div class="search" role="search">
+                        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35"></path><circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="1.6"></circle></svg>
+                        <input id="mainSearch" placeholder="Search articles, authors..." aria-label="Search articles" />
+                    </div>
+                    <button class="btn" id="subscribeBtn">Subscribe</button>
+                </div>
+            </nav>
+        </header>
+
+        <!-- MOBILE MENU -->
+        <div id="mobileMenu" style="display:none;margin-bottom:12px">
+            <nav aria-label="Mobile navigation">
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <a href="#" data-page="home" class="muted">Home</a>
+                    <a href="#" data-page="categories" class="muted">Categories</a>
+                    <a href="#" data-page="trending" class="muted">Trending</a>
+                    <a href="#" data-page="about" class="muted">About</a>
+                    <a href="#" data-page="contact" class="muted">Contact</a>
+                </div>
+            </nav>
+        </div>
+
+        <main>
+            <!-- HOME PAGE -->
+            <section id="home" class="page active" aria-labelledby="homeHeading">
+                <h1 id="homeHeading" style="margin:6px 0 12px;font-size:20px">Top stories</h1>
+
+                <div class="featured" role="region" aria-label="Featured stories">
+                    <div id="slider" class="slider" tabindex="0"></div>
+                    <div style="display:flex;align-items:center;gap:12px;padding:10px 14px">
+                        <div id="chipsTop" class="chips" aria-label="Filter by category"></div>
+                        <div style="margin-left:auto">
+                            <div id="sliderDots" class="slider-controls" aria-hidden="true"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display:flex;gap:16px;margin-top:12px;flex-direction:column">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <div>
+                            <h2 style="margin:0">Latest</h2>
+                            <div class="muted small">Top stories across categories</div>
+                        </div>
+                        <div class="muted small">Showing <span id="resultsCount">0</span> articles</div>
+                    </div>
+
+                    <div class="content" style="margin-top:8px">
+                        <section aria-labelledby="latest-heading">
+                            <div id="articlesGrid" class="grid" aria-live="polite"></div>
+                        </section>
+
+                        <aside aria-labelledby="sidebar-heading">
+                            <div style="display:flex;justify-content:space-between;align-items:center">
+                                <h3 id="sidebar-heading" style="margin:0">Trending</h3>
+                                <div class="muted small">This week</div>
+                            </div>
+                            <div id="trendingList" class="trending" style="margin-top:12px"></div>
+                        </aside>
+                    </div>
+
+                    <div>
+                        <h3 style="margin:0 0 8px">All categories</h3>
+                        <div id="chipsAll" class="chips" aria-label="All categories"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CATEGORIES PAGE -->
+            <section id="categories" class="page" aria-labelledby="catHeading">
+                <h1 id="catHeading" style="margin-top:0">Categories</h1>
+                <p class="muted">Browse articles by category. Click a category to filter.</p>
+                <div id="categoryPages" style="margin-top:12px"></div>
+            </section>
+
+            <!-- TRENDING PAGE -->
+            <section id="trending" class="page" aria-labelledby="trendHeading">
+                <h1 id="trendHeading" style="margin-top:0">Trending</h1>
+                <p class="muted">Top trending stories based on recency and editorial picks.</p>
+                <div id="trendingPage" style="margin-top:12px"></div>
+            </section>
+
+            <!-- ABOUT PAGE -->
+            <section id="about" class="page" aria-labelledby="aboutHeading">
+                <h1 id="aboutHeading" style="margin-top:0">About PulseNews</h1>
+                <p class="muted">PulseNews is a demo site built with vanilla HTML, CSS, and JavaScript. Purpose: to demonstrate a responsive, accessible news UI that works across devices.</p>
+                <ul>
+                    <li>Mobile-first responsive design</li>
+                    <li>Accessible navigation and components</li>
+                    <li>Vanilla JS — easy to adapt or plug into a CMS/API</li>
+                </ul>
+            </section>
+
+            <!-- CONTACT PAGE -->
+            <section id="contact" class="page" aria-labelledby="contactHeading">
+                <h1 id="contactHeading" style="margin-top:0">Contact</h1>
+                <p class="muted">Send feedback (demo only — form doesn't submit to a server).</p>
+
+                <form id="contactForm" onsubmit="return false" aria-label="Contact form">
+                    <div class="form-row two">
+                        <input type="text" id="name" placeholder="Your name" aria-label="Your name" required />
+                        <input type="email" id="email" placeholder="Your email" aria-label="Your email" required />
+                    </div>
+                    <div class="form-row">
+                        <input type="text" id="subject" placeholder="Subject" aria-label="Subject" required />
+                    </div>
+                    <div class="form-row">
+                        <textarea id="message" rows="6" placeholder="Message" aria-label="Message" required style="width:100%;padding:10px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:inherit"></textarea>
+                    </div>
+                    <div style="display:flex;gap:8px;align-items:center">
+                        <button class="btn" id="sendBtn" type="submit">Send</button>
+                        <div id="contactMsg" class="muted small" aria-live="polite"></div>
+                    </div>
+                </form>
+            </section>
+        </main>
+
+        <footer>
+            © <span id="year"></span> PulseNews — Demo site. Built with ❤️ and vanilla JS.
+        </footer>
+
+        <!-- modal for article view -->
+        <div class="modal" id="modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="modalTitle">
+            <div class="modal-card" role="document">
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-bottom:1px solid rgba(255,255,255,0.02)">
+                    <div>
+                        <strong id="modalTitle">Article title</strong>
+                        <div id="modalMeta" class="muted small">Author • Date • Category</div>
+                    </div>
+                    <div>
+                        <button class="close" id="modalClose" aria-label="Close article">Close</button>
+                    </div>
+                </div>
+                <div class="modal-body" id="modalBody">
+                    <img id="modalImg" src="" alt="" style="width:100%;height:auto;border-radius:8px;margin-bottom:12px;max-height:380px;object-fit:cover" />
+                    <div id="modalContent" class="small muted"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /******************************************************************
+         * Sample article data
+         * Each item: id, title, summary, author, date (yyyy-mm-dd), category,
+         * image (url), content (string)
+         ******************************************************************/
+        const ARTICLES = [{
+            id: 1,
+            title: "Global Summit Pledges Faster Climate Action",
+            summary: "World leaders commit to accelerated emissions cuts and funding for adaptation.",
+            author: "Anita Rao",
+            date: "2025-10-28",
+            category: "World",
+            image: "https://images.unsplash.com/photo-1508873535684-277a3cbcc7b2?q=80&w=1600&auto=format&fit=crop",
+            content: `Leaders from over 40 countries met at the Climate Summit to commit to accelerated emissions reductions and finance for adaptation. Delegates emphasized a fast track to net-zero by mid-century and more immediate action for vulnerable nations.`
+        }, {
+            id: 2,
+            title: "Breakthrough Battery Tech Promises 2x Range",
+            summary: "A new solid-state design could double EV ranges within 3 years.",
+            author: "Ravi Mehta",
+            date: "2025-11-02",
+            category: "Technology",
+            image: "https://images.unsplash.com/photo-1518779578993-ec3579fee39f?q=80&w=1600&auto=format&fit=crop",
+            content: "Researchers at the National Lab revealed a prototype solid-state battery that significantly increases energy density and safety. If commercialized, it could double EV range."
+        }, {
+            id: 3,
+            title: "City Charity Run Draws 20,000 Runners",
+            summary: "The annual run raised funds for local shelters and health programs.",
+            author: "Priya Singh",
+            date: "2025-10-19",
+            category: "Sports",
+            image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=1600&auto=format&fit=crop",
+            content: "Crowds cheered as participants ran through city streets to raise funds for community shelters and health programs. Organizers reported record donations this year."
+        }, {
+            id: 4,
+            title: "Indie Film Wins Big at International Festival",
+            summary: "A small-budget film from a first-time director took home the top prize.",
+            author: "Lina Das",
+            date: "2025-10-31",
+            category: "Entertainment",
+            image: "https://images.unsplash.com/photo-1519669556875-6d3e86c5bc8f?q=80&w=1600&auto=format&fit=crop",
+            content: "The film jury praised emotional storytelling and innovative cinematography. The win is expected to boost the director's career substantially."
+        }, {
+            id: 5,
+            title: "Parliament Debates New Digital Privacy Law",
+            summary: "Critics say the bill needs clearer safeguards for citizens.",
+            author: "Mohammed Khan",
+            date: "2025-11-04",
+            category: "Politics",
+            image: "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?q=80&w=1600&auto=format&fit=crop",
+            content: "Lawmakers discussed proposed changes to digital privacy laws, with disagreement over data retention and cross-border data flows. Civil society groups urged stronger safeguards."
+        }, {
+            id: 6,
+            title: "Startup Raises $30M to Clean Up Ocean Plastics",
+            summary: "New funding will scale ocean cleanup operations and recycling tech.",
+            author: "Anita Rao",
+            date: "2025-09-21",
+            category: "World",
+            image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1600&auto=format&fit=crop",
+            content: "The startup will deploy autonomous vessels to gather plastics and convert waste into recyclable feedstocks using a new thermal process."
+        }, {
+            id: 7,
+            title: "Local High School Robotics Team Triumphs",
+            summary: "Students beat regional rivals to win a national robotics challenge.",
+            author: "Ravi Mehta",
+            date: "2025-10-10",
+            category: "Technology",
+            image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=1600&auto=format&fit=crop",
+            content: "The team demonstrated a clever algorithm for autonomous navigation that impressed judges and secured the top prize."
+        }, {
+            id: 8,
+            title: "Night Market Brings New Life to Downtown",
+            summary: "Vendors and musicians fill the streets in a weekend cultural celebration.",
+            author: "Priya Singh",
+            date: "2025-09-29",
+            category: "Entertainment",
+            image: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?q=80&w=1600&auto=format&fit=crop",
+            content: "The night market introduced new small businesses and nightlife economy, drawing visitors and boosting local revenue."
+        }, {
+            id: 9,
+            title: "Remote Work Tools See Surge as Companies Extend Hybrid Policies",
+            summary: "Collaboration and scheduling platforms report strong growth as hybrid work becomes the norm.",
+            author: "Sanjay Patel",
+            date: "2025-11-03",
+            category: "Business",
+            image: "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?q=80&w=1600&auto=format&fit=crop",
+            content: "Providers of remote collaboration tools report a surge in active users and feature demand as large employers formalize hybrid work policies. Analysts expect continued investment in asynchronous and scheduling features."
+        }, {
+            id: 10,
+            title: "New Vaccine Candidate Shows Promise in Early Trials",
+            summary: "Phase I results show strong immune response and tolerable side effects in volunteers.",
+            author: "Dr. Maya Iyer",
+            date: "2025-10-20",
+            category: "Health",
+            image: "https://images.unsplash.com/photo-1584036561584-b03c19da874c?q=80&w=1600&auto=format&fit=crop",
+            content: "Researchers announced encouraging Phase I data for a vaccine candidate that produced robust antibody responses with minimal adverse events. Larger trials are planned to confirm efficacy."
+        }, {
+            id: 11,
+            title: "Researchers Map Near-Earth Asteroid in Unprecedented Detail",
+            summary: "A coordinated radar and optical campaign reveals surface features and spin state.",
+            author: "Carlos Vega",
+            date: "2025-08-14",
+            category: "Science",
+            image: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=1600&auto=format&fit=crop",
+            content: "Astronomers combined radar imaging and high-resolution optical data to produce a detailed map of a near-Earth asteroid, improving models used for planetary defense and future mission planning."
+        }, {
+            id: 12,
+            title: "Coastal Town Reopens Historic Lighthouse to Tourists",
+            summary: "After restoration, the lighthouse welcomes visitors with a new museum and viewing deck.",
+            author: "Elena Park",
+            date: "2025-07-05",
+            category: "Travel",
+            image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1600&auto=format&fit=crop",
+            content: "The restored lighthouse features a small museum narrating maritime history and a viewing deck that offers panoramic coastal views. Local businesses expect an uptick in tourism this season."
+        }, {
+            id: 13,
+            title: "City FC Clinches Dramatic Late Winner to Top the Table",
+            summary: "A stoppage-time goal secures a vital victory and moves City FC to the summit.",
+            author: "Arun Das",
+            date: "2025-11-01",
+            category: "Sports",
+            image: "https://images.unsplash.com/photo-1517926112627-5f3f9d8b0b14?q=80&w=1600&auto=format&fit=crop",
+            content: "Fans erupted as the forward headed home in stoppage time to seal a 2-1 win that propels City FC to the top of the league table. The manager praised the squad's resilience."
+        }, {
+            id: 14,
+            title: "National Cricket Side Upsets Tournament Favorites",
+            summary: "A disciplined bowling display stifles the heavyweights in a surprise result.",
+            author: "Meera Kulkarni",
+            date: "2025-10-22",
+            category: "Sports",
+            image: "https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=1600&auto=format&fit=crop",
+            content: "The underdogs defended a modest total with tight lines and clever fielding, securing a famous win and rejuvenating their campaign."
+        }, {
+            id: 15,
+            title: "Rising Star Breaks National Record at Athletics Meet",
+            summary: "A breakthrough performance brings a new national best in the 400m hurdles.",
+            author: "Sofia Rahman",
+            date: "2025-09-12",
+            category: "Sports",
+            image: "https://images.unsplash.com/photo-1508609349937-5ec4ae374ebf?q=80&w=1600&auto=format&fit=crop",
+            content: "The young athlete stunned rivals with a blistering finish to lower the national record, drawing praise from coaches and fans alike."
+        }, {
+            id: 16,
+            title: "City Marathon Sees Record Participation and Fast Times",
+            summary: "Thousands took part with elite runners posting PBs across categories.",
+            author: "Ravi Patel",
+            date: "2025-10-05",
+            category: "Sports",
+            image: "https://images.unsplash.com/photo-1509223197845-458d87318791?q=80&w=1600&auto=format&fit=crop",
+            content: "Organizers celebrated record turnout and several personal bests among elite and amateur runners; charity fundraising also hit a new high."
+        }, {
+            id: 17,
+            title: "National Basketball League Announces Midseason Trades",
+            summary: "Several teams reshuffle rosters ahead of the playoff push.",
+            author: "Liam O'Connor",
+            date: "2025-11-02",
+            category: "Sports",
+            image: "https://images.unsplash.com/photo-1517649983713-4a9aa3a9f3b7?q=80&w=1600&auto=format&fit=crop",
+            content: "Teams exchanged veterans and draft picks in high-profile trades as the deadline passed, setting up new title contenders."
+        }, {
+            id: 18,
+            title: "Tennis Pro Returns from Injury with Straight-Set Win",
+            summary: "The comeback match ended convincingly, easing concerns about fitness.",
+            author: "Yuki Tanaka",
+            date: "2025-10-18",
+            category: "Sports",
+            image: "https://images.unsplash.com/photo-1521412644187-c49fa049e84d?q=80&w=1600&auto=format&fit=crop",
+            content: "After months on the sidelines, the player showed no rust, winning in straight sets and promising to build momentum into the next tournament."
+        }, {
+            id: 19,
+            title: "Local Swim Team Sweeps Regional Championships",
+            summary: "Dominant performances across relays and individual events secure a clean sweep.",
+            author: "Priya Menon",
+            date: "2025-08-29",
+            category: "Sports",
+            image: "https://images.unsplash.com/photo-1508606572321-901ea443707f?q=80&w=1600&auto=format&fit=crop",
+            content: "The program's investment in coaching paid off as swimmers claimed multiple golds, qualifying several athletes for national trials."
+        }, {
+            id: 20,
+            title: "Underdog Club Advances in Cup with Gritty Away Win",
+            summary: "A disciplined defensive display and a counter-attack goal send them through.",
+            author: "Diego Morales",
+            date: "2025-10-28",
+            category: "Sports",
+            image: "https://images.unsplash.com/photo-1521412644187-c49fa049e84d?q=80&w=1600&auto=format&fit=crop",
+            content: "The cup tie saw the underdogs frustrate the favorites and take their chance on the break to secure a memorable victory."
+        }, {
+            id: 21,
+            title: "Coach Announces Youth Development Plan for Next Season",
+            summary: "A renewed focus on academies aims to fast-track young talent to the first team.",
+            author: "Hannah Kim",
+            date: "2025-09-30",
+            category: "Sports",
+            image: "https://images.unsplash.com/photo-1508609349937-5ec4ae374ebf?q=80&w=1600&auto=format&fit=crop",
+            content: "The initiative will increase scouting and coaching resources at youth levels, with the goal of producing first-team-ready players within two years."
+        }, {
+            id: 22,
+            title: "High School Championship Ends in Thrilling Penalty Shootout",
+            summary: "A dramatic shootout decided the local high school title in front of a packed crowd.",
+            author: "Nina Shah",
+            date: "2025-11-04",
+            category: "Sports",
+            image: "https://images.unsplash.com/photo-1517926112627-5f3f9d8b0b14?q=80&w=1600&auto=format&fit=crop",
+            content: "The final went to penalties after a tense draw; the winning goalkeeper became the hometown hero with two saves."
+        }];
+
+        const CATEGORIES = ["All", "Politics", "Sports", "Technology", "Entertainment", "World", "Business", "Health", "Science", "Travel"];
+
+        // DOM refs
+        const sliderEl = document.getElementById('slider');
+        const sliderDots = document.getElementById('sliderDots');
+        const chipsTop = document.getElementById('chipsTop');
+        const chipsAll = document.getElementById('chipsAll');
+        const articlesGrid = document.getElementById('articlesGrid');
+        const trendingList = document.getElementById('trendingList');
+        const mainSearch = document.getElementById('mainSearch');
+        const resultsCount = document.getElementById('resultsCount');
+        const yearEl = document.getElementById('year');
+
+        const modal = document.getElementById('modal');
+        const modalClose = document.getElementById('modalClose');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMeta = document.getElementById('modalMeta');
+        const modalImg = document.getElementById('modalImg');
+        const modalContent = document.getElementById('modalContent');
+
+        // Pages nav
+        const pages = document.querySelectorAll('.page');
+        const navLinks = document.querySelectorAll('[data-page]');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const menuToggle = document.getElementById('menuToggle');
+        const homeLogo = document.getElementById('homeLogo');
+
+        // state
+        let currentCategory = "All";
+        let currentQuery = "";
+        let featured = [];
+        let currentSlide = 0;
+        let sliderTimer = null;
+
+        yearEl.textContent = new Date().getFullYear();
+
+        // Utility functions
+        function formatDate(d) {
+            const dt = new Date(d);
+            return dt.toLocaleDateString(undefined, {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
+        // Build featured slides (choose latest 4)
+        function buildFeatured() {
+            featured = ARTICLES.slice().sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 4);
+            sliderEl.innerHTML = "";
+            sliderDots.innerHTML = "";
+            featured.forEach((art, idx) => {
+                const s = document.createElement('div');
+                s.className = 'slide' + (idx === 0 ? ' active' : '');
+                s.style.backgroundImage = `linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.6)), url(${art.image})`;
+                s.innerHTML = `<div class="card" role="article" aria-label="${escapeHtml(art.title)}">
+          <h2>${escapeHtml(art.title)}</h2>
+          <p>${escapeHtml(art.summary)}</p>
+        </div>`;
+                s.addEventListener('click', () => openArticle(art.id));
+                sliderEl.appendChild(s);
+
+                const dot = document.createElement('button');
+                dot.className = 'dot' + (idx === 0 ? ' active' : '');
+                dot.setAttribute('aria-label', 'Go to slide ' + (idx + 1));
+                dot.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    goToSlide(idx);
+                });
+                sliderDots.appendChild(dot);
+            });
+            currentSlide = 0;
+            resetSliderTimer();
+        }
+
+        function goToSlide(i) {
+            const slides = sliderEl.querySelectorAll('.slide');
+            slides.forEach((s, idx) => s.classList.toggle('active', idx === i));
+            const dots = sliderDots.querySelectorAll('.dot');
+            dots.forEach((d, idx) => d.classList.toggle('active', idx === i));
+            currentSlide = i;
+        }
+
+        function nextSlide() {
+            const next = (currentSlide + 1) % featured.length;
+            goToSlide(next);
+        }
+
+        function resetSliderTimer() {
+            if (sliderTimer) clearInterval(sliderTimer);
+            sliderTimer = setInterval(nextSlide, 4000);
+        }
+
+        // Build chips
+        function buildChips() {
+            chipsTop.innerHTML = "";
+            chipsAll.innerHTML = "";
+            CATEGORIES.forEach(cat => {
+                const b = document.createElement('button');
+                b.className = 'chip' + (cat === currentCategory ? ' active' : '');
+                b.textContent = cat;
+                b.setAttribute('aria-pressed', cat === currentCategory ? 'true' : 'false');
+                b.addEventListener('click', () => {
+                    currentCategory = cat;
+                    updateUI();
+                });
+                chipsTop.appendChild(b);
+
+                const b2 = b.cloneNode(true);
+                b2.addEventListener('click', () => {
+                    currentCategory = cat;
+                    updateUI();
+                });
+                chipsAll.appendChild(b2);
+            });
+        }
+
+        // Build grid
+        function buildGrid(list) {
+            articlesGrid.innerHTML = "";
+            if (list.length === 0) {
+                articlesGrid.innerHTML = `<div class="muted">No articles match your search or category.</div>`;
+                resultsCount.textContent = "0";
+                return;
+            }
+            resultsCount.textContent = list.length;
+            list.forEach(a => {
+                const card = document.createElement('article');
+                card.className = 'card';
+                card.innerHTML = `
+          <img src="${a.image}" alt="${escapeHtml(a.title)}" loading="lazy" />
+          <div class="card-body">
+            <div class="meta"><span>${escapeHtml(a.author)}</span><span>${formatDate(a.date)}</span></div>
+            <h3 class="title">${escapeHtml(a.title)}</h3>
+                        <div class="summary">${escapeHtml(a.summary)}</div>
+                        <div class="readline">Read the full article for more details.</div>
+                        <div class="readmore">
+              <div class="muted small">${escapeHtml(a.category)}</div>
+              <button class="btn small" data-id="${a.id}" aria-label="Read more about ${escapeHtml(a.title)}">Read more</button>
+            </div>
+          </div>
+        `;
+                const btn = card.querySelector('button');
+                btn.addEventListener('click', () => openArticle(a.id));
+                articlesGrid.appendChild(card);
+            });
+        }
+
+        // Trending
+        function buildTrending() {
+            const list = ARTICLES.slice().sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 3);
+            trendingList.innerHTML = "";
+            list.forEach(a => {
+                const el = document.createElement('div');
+                el.className = 'trend-item';
+                el.innerHTML = `<img src="${a.image}" alt="${escapeHtml(a.title)}" /><div style="flex:1"><strong style="display:block">${escapeHtml(a.title)}</strong><div class="muted small">${formatDate(a.date)} • ${escapeHtml(a.author)}</div><div class="readline small muted">Read the full article for more details.</div></div>`;
+                el.addEventListener('click', () => openArticle(a.id));
+                trendingList.appendChild(el);
+            });
+        }
+
+        // Categories page builder
+        function buildCategoryPages() {
+            const container = document.getElementById('categoryPages');
+            container.innerHTML = '';
+            const cats = CATEGORIES.filter(c => c !== 'All');
+            cats.forEach(cat => {
+                const wrapper = document.createElement('div');
+                wrapper.style.marginBottom = '18px';
+                wrapper.innerHTML = `<h3 style="margin:6px 0">${cat}</h3><div class="grid" id="cat-${cat}"></div>`;
+                container.appendChild(wrapper);
+                const list = ARTICLES.filter(a => a.category === cat).sort((a, b) => new Date(b.date) - new Date(a.date));
+                const gridEl = wrapper.querySelector(`#cat-${cat}`);
+                if (list.length === 0) {
+                    gridEl.innerHTML = `<div class="muted">No articles in this category.</div>`;
+                } else {
+                    list.forEach(a => {
+                        const card = document.createElement('article');
+                        card.className = 'card';
+                        card.innerHTML = `<img src="${a.image}" alt="${escapeHtml(a.title)}" /><div class="card-body"><div class="meta"><span>${escapeHtml(a.author)}</span><span>${formatDate(a.date)}</span></div><h3 class="title">${escapeHtml(a.title)}</h3><div class="summary">${escapeHtml(a.summary)}</div><div class="readline">Read the full article for more details.</div><div class="readmore"><div class="muted small">${escapeHtml(a.category)}</div><button class="btn small" data-id="${a.id}">Read more</button></div></div>`;
+                        card.querySelector('button').addEventListener('click', () => openArticle(a.id));
+                        gridEl.appendChild(card);
+                    });
+                }
+            });
+        }
+
+        // Trending page
+        function buildTrendingPage() {
+            const el = document.getElementById('trendingPage');
+            el.innerHTML = '';
+            const list = ARTICLES.slice().sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 6);
+            if (list.length === 0) el.innerHTML = '<div class="muted">No trending stories.</div>';
+            else {
+                const grid = document.createElement('div');
+                grid.className = 'grid';
+                list.forEach(a => {
+                    const card = document.createElement('article');
+                    card.className = 'card';
+                    card.innerHTML = `<img src="${a.image}" alt="${escapeHtml(a.title)}" /><div class="card-body"><div class="meta"><span>${escapeHtml(a.author)}</span><span>${formatDate(a.date)}</span></div><h3 class="title">${escapeHtml(a.title)}</h3><div class="summary">${escapeHtml(a.summary)}</div><div class="readline">Read the full article for more details.</div><div class="readmore"><div class="muted small">${escapeHtml(a.category)}</div><button class="btn small" data-id="${a.id}">Read more</button></div></div>`;
+                    card.querySelector('button').addEventListener('click', () => openArticle(a.id));
+                    grid.appendChild(card);
+                });
+                el.appendChild(grid);
+            }
+        }
+
+        // Search & filter
+        function filterArticles() {
+            let list = ARTICLES.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
+            if (currentCategory && currentCategory !== 'All') {
+                list = list.filter(a => a.category === currentCategory);
+            }
+            const q = (currentQuery || '').trim().toLowerCase();
+            if (q.length) {
+                list = list.filter(a => a.title.toLowerCase().includes(q) || a.summary.toLowerCase().includes(q) || a.author.toLowerCase().includes(q));
+            }
+            return list;
+        }
+
+        function updateUI() {
+            // update chips active state
+            document.querySelectorAll('.chip').forEach(c => {
+                c.classList.toggle('active', c.textContent === currentCategory);
+            });
+            buildGrid(filterArticles());
+            buildTrending();
+            buildCategoryPages();
+            buildTrendingPage();
+        }
+
+        // Article modal open
+        function openArticle(id) {
+            const art = ARTICLES.find(a => a.id === id);
+            if (!art) return;
+            modalTitle.textContent = art.title;
+            modalMeta.textContent = `${art.author} • ${formatDate(art.date)} • ${art.category}`;
+            modalImg.src = art.image;
+            modalImg.alt = art.title;
+            modalContent.textContent = art.content;
+            modal.classList.add('show');
+            modal.setAttribute('aria-hidden', 'false');
+            // trap focus (simple)
+            modalClose.focus();
+        }
+        modalClose.addEventListener('click', () => {
+            modal.classList.remove('show');
+            modal.setAttribute('aria-hidden', 'true');
+        });
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('show');
+                modal.setAttribute('aria-hidden', 'true');
+            }
+        });
+
+        // keyboard: Esc to close modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                if (modal.classList.contains('show')) {
+                    modal.classList.remove('show');
+                    modal.setAttribute('aria-hidden', 'true');
+                }
+            }
+        });
+
+        // NAVIGATION between pages
+        function showPage(name) {
+            pages.forEach(p => p.classList.toggle('active', p.id === name));
+            // update nav link active styles
+            document.querySelectorAll('[data-page]').forEach(a => {
+                a.setAttribute('aria-current', a.getAttribute('data-page') === name ? 'true' : 'false');
+            });
+            // hide mobile menu after selection
+            mobileMenu.style.display = 'none';
+            menuToggle.setAttribute('aria-expanded', 'false');
+        }
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const page = link.getAttribute('data-page');
+                showPage(page);
+            });
+        });
+        // mobile menu links
+        document.querySelectorAll('#mobileMenu [data-page]').forEach(m => {
+            m.addEventListener('click', (e) => {
+                e.preventDefault();
+                showPage(m.getAttribute('data-page'));
+            });
+        });
+
+        // hamburger toggle
+        menuToggle.addEventListener('click', () => {
+            const open = mobileMenu.style.display === 'block';
+            mobileMenu.style.display = open ? 'none' : 'block';
+            menuToggle.setAttribute('aria-expanded', (!open).toString());
+        });
+
+        // logo click -> home
+        homeLogo.addEventListener('click', () => showPage('home'));
+        homeLogo.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') showPage('home');
+        });
+
+        // search wiring
+        let searchTimer;
+        mainSearch.addEventListener('input', (e) => {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => {
+                currentQuery = e.target.value;
+                updateUI();
+            }, 150);
+        });
+
+        // subscribe button (demo)
+        document.getElementById('subscribeBtn').addEventListener('click', () => {
+            alert('Thanks — subscription demo (no backend).');
+        });
+
+        // Contact form demo
+        document.getElementById('contactForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            document.getElementById('contactMsg').textContent = 'Thanks! Your message was recorded (demo).';
+            document.getElementById('contactForm').reset();
+        });
+
+        // Pause slider on hover and focus
+        sliderEl.addEventListener('mouseenter', () => {
+            if (sliderTimer) clearInterval(sliderTimer);
+        });
+        sliderEl.addEventListener('mouseleave', () => resetSliderTimer());
+        sliderEl.addEventListener('focusin', () => {
+            if (sliderTimer) clearInterval(sliderTimer);
+        });
+        sliderEl.addEventListener('focusout', () => resetSliderTimer());
+
+        // init all UI
+        buildFeatured();
+        buildChips();
+        updateUI();
+
+        // Accessibility: keyboard nav for slider dots
+        sliderDots.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') goToSlide((currentSlide - 1 + featured.length) % featured.length);
+            if (e.key === 'ArrowRight') goToSlide((currentSlide + 1) % featured.length);
+        });
+
+        // Expose functions for potential debugging
+        window.PulseNews = {
+            ARTICLES,
+            CATEGORIES,
+            openArticle,
+            showPage
+        };
+    </script>
+</body>
+
+</html>
